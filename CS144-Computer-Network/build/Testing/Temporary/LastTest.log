@@ -1,0 +1,23 @@
+Start testing: Jul 28 00:13 CST
+----------------------------------------------------------
+31/164 Testing: t_webget
+31/164 Test: t_webget
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/tests/webget_t.sh"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_webget" start time: Jul 28 00:13 CST
+Output:
+----------------------------------------------------------
+Function called: get_URL(cs144.keithw.org, /nph-hasher/xyzzy).
+HTTP/1.1 200 OK
+Content-type: text/plain
+
+7SmXqWkrLKzVBCEalbSPqBcvs11Pw263K7x4Wv3JckI
+<end of output>
+Test time =   1.03 sec
+----------------------------------------------------------
+Test Passed.
+"t_webget" end time: Jul 28 00:13 CST
+"t_webget" time elapsed: 00:00:01
+----------------------------------------------------------
+
+End testing: Jul 28 00:13 CST

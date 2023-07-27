@@ -1,5 +1,19 @@
 # CS144 Computer Network 学习记录
 
+## 参考引用
+- [代码仓库](https://gitee.com/kangyupl/sponge)
+
+## 进展
+
+- [ ] lab0
+- [ ] lab1
+- [ ] lab2
+- [ ] lab3
+- [ ] lab4
+- [ ] lab5
+- [ ] lab6
+- [ ] lab7
+
 ## lab0
 
 ### 1 环境安装
@@ -75,3 +89,9 @@ fadfads
 说实话，做到这个实验发现可以实现双方通信了感觉还是有点神奇的。
 
 ### 3 Writing a network program using an OS stream socket
+
+3.1 - 3.3 是一些规范性内容，其中的配置问题已在上面的链接中说明，此不做赘述
+
+#### 3.4 Writing webget
+具体的TCPSocket使用方式可以参考 [TCP使用范例](https://cs144.github.io/doc/lab0/class_t_c_p_socket.html#a45d4ff72e1f0c755225e60f89326085c)
+- 尤其要注意write的内容,真的是一个空格都不能多
