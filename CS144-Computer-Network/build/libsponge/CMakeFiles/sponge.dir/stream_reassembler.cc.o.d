@@ -128,4 +128,8 @@ libsponge/CMakeFiles/sponge.dir/stream_reassembler.cc.o: \
  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
- /usr/include/c++/8/bits/basic_string.tcc
+ /usr/include/c++/8/bits/basic_string.tcc /usr/include/c++/8/deque \
+ /usr/include/c++/8/bits/stl_construct.h \
+ /usr/include/c++/8/bits/stl_uninitialized.h /usr/include/c++/8/utility \
+ /usr/include/c++/8/bits/stl_relops.h /usr/include/c++/8/bits/stl_deque.h \
+ /usr/include/c++/8/bits/deque.tcc

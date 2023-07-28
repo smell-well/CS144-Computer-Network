@@ -1,10 +1,85 @@
-Start testing: Jul 28 00:13 CST
+Start testing: Jul 28 20:34 CST
 ----------------------------------------------------------
+26/164 Testing: t_byte_stream_construction
+26/164 Test: t_byte_stream_construction
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/tests/byte_stream_construction"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_byte_stream_construction" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"t_byte_stream_construction" end time: Jul 28 20:34 CST
+"t_byte_stream_construction" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/164 Testing: t_byte_stream_one_write
+27/164 Test: t_byte_stream_one_write
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/tests/byte_stream_one_write"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_byte_stream_one_write" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"t_byte_stream_one_write" end time: Jul 28 20:34 CST
+"t_byte_stream_one_write" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/164 Testing: t_byte_stream_two_writes
+28/164 Test: t_byte_stream_two_writes
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/tests/byte_stream_two_writes"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_byte_stream_two_writes" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"t_byte_stream_two_writes" end time: Jul 28 20:34 CST
+"t_byte_stream_two_writes" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/164 Testing: t_byte_stream_capacity
+29/164 Test: t_byte_stream_capacity
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/tests/byte_stream_capacity"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_byte_stream_capacity" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.49 sec
+----------------------------------------------------------
+Test Passed.
+"t_byte_stream_capacity" end time: Jul 28 20:34 CST
+"t_byte_stream_capacity" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/164 Testing: t_byte_stream_many_writes
+30/164 Test: t_byte_stream_many_writes
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/tests/byte_stream_many_writes"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_byte_stream_many_writes" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"t_byte_stream_many_writes" end time: Jul 28 20:34 CST
+"t_byte_stream_many_writes" time elapsed: 00:00:00
+----------------------------------------------------------
+
 31/164 Testing: t_webget
 31/164 Test: t_webget
 Command: "/home/ymk/proj/cs144/CS144-Computer-Network/tests/webget_t.sh"
 Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
-"t_webget" start time: Jul 28 00:13 CST
+"t_webget" start time: Jul 28 20:34 CST
 Output:
 ----------------------------------------------------------
 Function called: get_URL(cs144.keithw.org, /nph-hasher/xyzzy).
@@ -16,8 +91,53 @@ Content-type: text/plain
 Test time =   1.03 sec
 ----------------------------------------------------------
 Test Passed.
-"t_webget" end time: Jul 28 00:13 CST
+"t_webget" end time: Jul 28 20:34 CST
 "t_webget" time elapsed: 00:00:01
 ----------------------------------------------------------
 
-End testing: Jul 28 00:13 CST
+48/164 Testing: t_address_dt
+48/164 Test: t_address_dt
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/doctests/address_dt"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_address_dt" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"t_address_dt" end time: Jul 28 20:34 CST
+"t_address_dt" time elapsed: 00:00:00
+----------------------------------------------------------
+
+49/164 Testing: t_parser_dt
+49/164 Test: t_parser_dt
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/doctests/parser_dt"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_parser_dt" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"t_parser_dt" end time: Jul 28 20:34 CST
+"t_parser_dt" time elapsed: 00:00:00
+----------------------------------------------------------
+
+50/164 Testing: t_socket_dt
+50/164 Test: t_socket_dt
+Command: "/home/ymk/proj/cs144/CS144-Computer-Network/build/doctests/socket_dt"
+Directory: /home/ymk/proj/cs144/CS144-Computer-Network/build
+"t_socket_dt" start time: Jul 28 20:34 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"t_socket_dt" end time: Jul 28 20:34 CST
+"t_socket_dt" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jul 28 20:34 CST
