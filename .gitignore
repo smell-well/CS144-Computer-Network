@@ -1,6 +1,6 @@
 *.a
 *.o
-/build
+/CS144-Computer-Network/build
 CMakeCache.txt
 CMakeFiles
 Makefile
