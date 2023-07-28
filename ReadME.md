@@ -5,7 +5,7 @@
 
 ## 进展
 
-- [ ] lab0
+- [x] lab0
 - [ ] lab1
 - [ ] lab2
 - [ ] lab3
@@ -95,3 +95,7 @@ fadfads
 #### 3.4 Writing webget
 具体的TCPSocket使用方式可以参考 [TCP使用范例](https://cs144.github.io/doc/lab0/class_t_c_p_socket.html#a45d4ff72e1f0c755225e60f89326085c)
 - 尤其要注意write的内容,真的是一个空格都不能多
+
+### 4 An in-memory reliable byte stream
+实现一个比特流的处理类, 主要是熟悉下c++编程。
+
