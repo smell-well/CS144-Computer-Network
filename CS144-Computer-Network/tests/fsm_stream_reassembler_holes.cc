@@ -123,7 +123,7 @@ int main() {
 
             test.execute(SubmitSegment{"c", 2});
             test.execute(BytesAssembled(4));
-            test.execute(BytesAvailable("cd"));
+            test.execute(BytesAvailable("cd")); 
             test.execute(NotAtEof{});
 
             test.execute(SubmitSegment{"", 4}.with_eof(true));

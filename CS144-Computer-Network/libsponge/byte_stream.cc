@@ -29,6 +29,16 @@ size_t ByteStream::write(const string &data) {
     return len;
 }
 
+bool ByteStream::write_char(const char &data) {
+    if (_capacity > _buffer.size()) {
+        _buffer.push_back(data);
+        _writeCnt++;
+        return true;
+    }
+    return false;
+}
+
+
 //! \param[in] len bytes will be copied from the output side of the buffer
 string ByteStream::peek_output(const size_t len) const {
     size_t dataLen = len;
