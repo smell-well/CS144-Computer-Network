@@ -54,6 +54,8 @@ class StreamReassembler {
     //! \param eof the last byte of `data` will be the last byte in the entire stream
     void push_substring(const std::string &data, const uint64_t index, const bool eof);
 
+    size_t first_unassembled_index() const;
+
     //! \name Access the reassembled byte stream
     //!@{
     const ByteStream &stream_out() const { return _output; }

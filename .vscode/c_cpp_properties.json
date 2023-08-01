@@ -4,12 +4,11 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/CS144-Computer-Network/libsponge/util"
+                "${workspaceFolder}/CS144-Computer-Network/libsponge/"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c17",
-            "cppStandard": "c++14",
+            "compilerPath": "/usr/bin/g++",
+            "cppStandard": "c++17",
             "intelliSenseMode": "linux-clang-x64"
         }
     ],
