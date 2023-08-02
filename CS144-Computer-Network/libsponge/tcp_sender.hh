@@ -10,6 +10,61 @@
 #include <queue>
 
 //! \brief The "sender" part of a TCP implementation.
+// RTO Timer helper
+class RTOTimer {
+  private:
+    bool _start;
+    size_t _start_time;
+    size_t curr_time;
+    size_t retransmission_time;
+  
+  public:
+    size_t num_of_retransmission;
+
+    RTOTimer(size_t rto) : 
+      _start(false),
+      _start_time(0),
+      curr_time(0),
+      retransmission_time(rto),
+      num_of_retransmission(0) {}
+
+    bool running() {return _start;}
+
+    void start() {
+      _start = true;
+    }
+
+    void close() {
+      _start = false;
+      num_of_retransmission = 0;
+    }
+
+    void double_RTO() {
+      if (!running()) return;
+      _start_time = 0;
+      curr_time = 0;
+      num_of_retransmission++;
+      retransmission_time *= 2;
+    }
+
+    void reset(size_t rto) {
+      _start_time = 0;
+      curr_time = 0;
+      num_of_retransmission = 0;
+      retransmission_time = rto;
+    }
+
+    bool tick(size_t ms_since_last_tick) {
+      if (!running()) return false;
+      curr_time += ms_since_last_tick;
+      if (curr_time >= retransmission_time + _start_time) {
+        return true;
+      }
+      return false;
+    }
+};
+
+
 
 //! Accepts a ByteStream, divides it up into segments and sends the
 //! segments, keeps track of which segments are still in-flight,
@@ -23,6 +78,8 @@ class TCPSender {
     //! outbound queue of segments that the TCPSender wants sent
     std::queue<TCPSegment> _segments_out{};
 
+    
+
     //! retransmission timer for the connection
     unsigned int _initial_retransmission_timeout;
 
@@ -31,6 +88,18 @@ class TCPSender {
 
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
+
+    uint64_t _window_size;
+
+    uint64_t _flight_bytes;
+
+    RTOTimer timer;
+
+    std::queue<TCPSegment> _segments_in_flight{};
+    
+    bool _syn;
+    bool _fin;
+
 
   public:
     //! Initialize a TCPSender
