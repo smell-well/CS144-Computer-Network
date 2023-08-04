@@ -18,11 +18,37 @@ size_t TCPConnection::bytes_in_flight() const { return _sender.bytes_in_flight()
 
 size_t TCPConnection::unassembled_bytes() const { return _receiver.unassembled_bytes(); }
 
-size_t TCPConnection::time_since_last_segment_received() const { return {}; }
+size_t TCPConnection::time_since_last_segment_received() const { return _sender.time_since_last_segment_received(); }
 
-void TCPConnection::segment_received(const TCPSegment &seg) { DUMMY_CODE(seg); }
+void TCPConnection::segment_received(const TCPSegment &seg) { 
+    TCPHeader header = seg.header();
+    
+    if (header.rst) {
+        _sender.stream_in().set_error();
+        _receiver.stream_out().set_error();
+        return;
+    }
 
-bool TCPConnection::active() const { return {}; }
+    _receiver.segment_received(seg);
+
+    if (header.ack) {
+        recv_ackno = header.seqno;
+        recv_window_size = header.win;
+    }
+
+    if (seg.length_in_sequence_space() >= 0) {
+        // send empty segment 
+        _sender.send_empty_segment();
+        queue<TCPSegment> seg_out = _sender.segments_out();
+        TCPSegment seg_to_sent = seg_out.front();
+    }
+    // 判断接收的seqno是否有效
+    if ()
+ }
+
+bool TCPConnection::active() const {
+    return (!_sender.stream_in().input_ended() && !_receiver.stream_out().input_ended());
+}
 
 size_t TCPConnection::write(const string &data) {
     // 这个就是真实的发送包
@@ -42,15 +68,15 @@ size_t TCPConnection::write(const string &data) {
     }
     stream_in.write(data);
 
-    optional<WrappingInt32> ackno = _receiver.ackno();
-    size_t win_size = _receiver.window_size();
+    WrappingInt32 ackno = recv_ackno;
+    size_t win_size = recv_window_size;
 
     // receiver_state == LISTEN
-    if (!ackno.has_value()) {
+    if (ackno.raw_value() == 0) {
         return 0;
     }
 
-    _sender.ack_received(ackno.value(), win_size);
+    _sender.ack_received(ackno, win_size);
     // 没有创建syn包
     if (_sender.segments_out().empty()) {
         return 0;
@@ -58,6 +84,14 @@ size_t TCPConnection::write(const string &data) {
     // TCPSender wants sent
     queue<TCPSegment> seg_out = _sender.segments_out();
     TCPSegment seg_to_sent = seg_out.front();
+
+    // need to set ack
+    if (_receiver.ackno().has_value()) {
+        seg_to_sent.header().ack = true;
+        seg_to_sent.header().ackno = _receiver.ackno().value();
+        seg_to_sent.header().win = min((uint64_t)0xffff, win_size);
+    }
+
     _segments_out.push(seg_to_sent);
 
 
@@ -66,7 +100,16 @@ size_t TCPConnection::write(const string &data) {
 }
 
 //! \param[in] ms_since_last_tick number of milliseconds since the last call to this method
-void TCPConnection::tick(const size_t ms_since_last_tick) { DUMMY_CODE(ms_since_last_tick); }
+void TCPConnection::tick(const size_t ms_since_last_tick) { 
+    _sender.tick(ms_since_last_tick);
+
+    if (_sender.consecutive_retransmissions() >= TCPConfig::MAX_RETX_ATTEMPTS) {
+        _sender.send_empty_segment();
+        queue<TCPSegment> seg_out = _sender.segments_out();
+        TCPSegment seg_to_sent = seg_out.front();
+        seg_to_sent.header().rst = true;
+    }
+}
 
 void TCPConnection::end_input_stream() {
     ByteStream stream_in = _sender.stream_in();
