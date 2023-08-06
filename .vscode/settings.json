@@ -56,7 +56,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "set": "cpp"
     },
     "cmake.configureOnOpen": true
 }

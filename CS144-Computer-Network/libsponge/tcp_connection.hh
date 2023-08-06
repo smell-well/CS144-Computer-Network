@@ -6,6 +6,9 @@
 #include "tcp_sender.hh"
 #include "tcp_state.hh"
 
+
+#include <queue>
+
 //! \brief A complete endpoint of a TCP connection
 class TCPConnection {
   private:
@@ -20,9 +23,7 @@ class TCPConnection {
     //! for 10 * _cfg.rt_timeout milliseconds after both streams have ended,
     //! in case the remote TCPConnection doesn't know we've received its whole stream?
     bool _linger_after_streams_finish{true};
-
-    WrappingInt32 recv_ackno;
-    size_t recv_window_size;
+    bool _active{false};
 
   public:
     //! \name "Input" interface for the writer
@@ -70,6 +71,8 @@ class TCPConnection {
 
     //! Called periodically when time elapses
     void tick(const size_t ms_since_last_tick);
+
+    void send_segment(std::queue<TCPSegment> &segment_prepare);
 
     //! \brief TCPSegments that the TCPConnection has enqueued for transmission.
     //! \note The owner or operating system will dequeue these and

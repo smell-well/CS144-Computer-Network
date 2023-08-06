@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+
 // Dummy implementation of a TCP connection
 
 // For Lab 4, please replace with a real implementation that passes the
@@ -20,83 +21,100 @@ size_t TCPConnection::unassembled_bytes() const { return _receiver.unassembled_b
 
 size_t TCPConnection::time_since_last_segment_received() const { return _sender.time_since_last_segment_received(); }
 
+
+// 这个函数只负责 ack，ackno，win 和 payload部分
+void TCPConnection::send_segment(queue<TCPSegment> &segment_prepare) {
+    // TODO:只有当close状态才不能发送包
+
+
+    while (!segment_prepare.empty()) {
+        TCPSegment seg = segment_prepare.front();
+        segment_prepare.pop();
+        optional<WrappingInt32> ackno = _receiver.ackno();
+        if (ackno.has_value()) {
+            seg.header().ack = true;
+            seg.header().ackno = ackno.value();
+            seg.header().win = max(static_cast<uint64_t>((0xffff)), _receiver.window_size());
+        }
+        // cout << seg.header().summary();
+        // cout << " with " << seg.payload().size() << " bytes\n";
+        _segments_out.push(seg);
+    }
+
+}
+
 void TCPConnection::segment_received(const TCPSegment &seg) { 
     TCPHeader header = seg.header();
-    
+    // cout << "func: segment_received" << endl;
+
     if (header.rst) {
-        _sender.stream_in().set_error();
         _receiver.stream_out().set_error();
-        return;
+        _sender.stream_in().set_error();
     }
+
 
     _receiver.segment_received(seg);
 
+    
+    // 对接收的包做出相应的行为
+    // cout << "seg received:" << endl;
+    // cout << seg.header().summary();
+    // cout << " with " << seg.payload().size() << " bytes\n";
+    // cout << "check ack: " << header.ack << endl;
     if (header.ack) {
-        recv_ackno = header.seqno;
-        recv_window_size = header.win;
+        WrappingInt32 ackno = header.ackno;
+        size_t window_size = header.win;
+        _sender.ack_received(ackno, window_size);
     }
 
-    if (seg.length_in_sequence_space() >= 0) {
-        // send empty segment 
-        _sender.send_empty_segment();
-        queue<TCPSegment> seg_out = _sender.segments_out();
-        TCPSegment seg_to_sent = seg_out.front();
+    
+    if (header.syn) {
+        // server端接收到第一次握手
+        // 确定是从LISTEN转移过来
+        // 运行到这里说明至少 receiver 是 syn_recv
+        // 所以根据 sender 的状态决定发送内容
+        bool check_sender_closed = _sender.next_seqno_absolute() == 0;
+        if (check_sender_closed) {
+            // 服务端回复
+            _sender.fill_window();
+        } else {
+            // SYN_SENT -> received SYN without ack
+            _sender.send_empty_segment();
+        }
+
     }
-    // 判断接收的seqno是否有效
-    if ()
- }
+    
+
+
+    // 接下来还要处理关闭的情况
+
+    // TCP keep-alive
+    if (_receiver.ackno().has_value() && seg.length_in_sequence_space() == 0 && seg.header().seqno == _receiver.ackno().value() - 1) {
+        _sender.send_empty_segment();
+    }
+
+    send_segment(_sender.segments_out());
+
+}
 
 bool TCPConnection::active() const {
     return (!_sender.stream_in().input_ended() && !_receiver.stream_out().input_ended());
 }
 
 size_t TCPConnection::write(const string &data) {
-    // 这个就是真实的发送包
-    // TODO:如果是 ack 包，需要加上ack标记
-    // state != syn_acked
-    size_t next_seqno_abso = _sender.next_seqno_absolute();
-    ByteStream stream_in = _sender.stream_in();
-    bool syn_acked_0 = next_seqno_abso > 0 && !stream_in.eof();
-    bool syn_acked_1 = stream_in.eof() && next_seqno_abso < stream_in.bytes_written() + 2;
-    if (!syn_acked_0 && !syn_acked_1) {
+    // 需要确定进入 ESTABLISHED 状态
+    // receiver SYN_RECV
+    // sender SYN_ACKED
+    bool check_estalished = _receiver.ackno().has_value() && !_receiver.stream_out().input_ended()
+        && _sender.next_seqno_absolute() > _sender.bytes_in_flight() && !_sender.stream_in().eof();
+    if (!check_estalished) {
         return 0;
     }
 
-    // _sender 已经停止写入
-    if (stream_in.input_ended()) {
-        return 0;
-    }
-    stream_in.write(data);
-
-    WrappingInt32 ackno = recv_ackno;
-    size_t win_size = recv_window_size;
-
-    // receiver_state == LISTEN
-    if (ackno.raw_value() == 0) {
-        return 0;
-    }
-
-    _sender.ack_received(ackno, win_size);
-    // 没有创建syn包
-    if (_sender.segments_out().empty()) {
-        return 0;
-    }
-    // TCPSender wants sent
-    queue<TCPSegment> seg_out = _sender.segments_out();
-    TCPSegment seg_to_sent = seg_out.front();
-
-    // need to set ack
-    if (_receiver.ackno().has_value()) {
-        seg_to_sent.header().ack = true;
-        seg_to_sent.header().ackno = _receiver.ackno().value();
-        seg_to_sent.header().win = min((uint64_t)0xffff, win_size);
-    }
-
-    _segments_out.push(seg_to_sent);
-
-
-    // 计算seg.payload得出写入了多少
-    return seg_to_sent.payload().size();
+    size_t written = _sender.stream_in().write(data);
+    // _sender.fill_window();
+    // send_segment(_sender.segments_out());
+    return written;
 }
 
 //! \param[in] ms_since_last_tick number of milliseconds since the last call to this method
@@ -114,6 +132,9 @@ void TCPConnection::tick(const size_t ms_since_last_tick) {
 void TCPConnection::end_input_stream() {
     ByteStream stream_in = _sender.stream_in();
     stream_in.end_input();
+    _sender.fill_window();
+    
+    send_segment(_sender.segments_out());
 }
 
 void TCPConnection::connect() {
@@ -121,15 +142,16 @@ void TCPConnection::connect() {
     if (_sender.next_seqno_absolute() != 0) {
         return;
     }
+
+    // SYN_SENT
     _sender.fill_window();
     // 没有创建syn包
     if (_sender.segments_out().empty()) {
         return;
     }
     // TCPSender wants sent
-    queue<TCPSegment> seg_out = _sender.segments_out();
-    TCPSegment start_connect = seg_out.front();
-    _segments_out.push(start_connect);
+    // cout << "func: connect" << endl;
+    send_segment(_sender.segments_out());
 }
 
 TCPConnection::~TCPConnection() {
