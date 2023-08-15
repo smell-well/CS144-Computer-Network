@@ -19,6 +19,7 @@ int main() {
 
         // test #1: start in LAST_ACK, ack
         {
+            cout << "=============test 1===========" << endl;
             TCPTestHarness test_1 = TCPTestHarness::in_last_ack(cfg);
 
             test_1.execute(Tick(4 * cfg.rt_timeout));
@@ -33,6 +34,7 @@ int main() {
 
         // test #2: start in CLOSE_WAIT, close(), throw away first FIN, ack re-tx FIN
         {
+            cout << "=============test 2===========" << endl;
             TCPTestHarness test_2 = TCPTestHarness::in_close_wait(cfg);
 
             test_2.execute(Tick(4 * cfg.rt_timeout));
@@ -70,6 +72,7 @@ int main() {
 
         // test #3: start in ESTABLSHED, send FIN, recv ACK, check for CLOSE_WAIT
         {
+            cout << "=============test 3===========" << endl;
             TCPTestHarness test_3 = TCPTestHarness::in_established(cfg);
 
             test_3.execute(Tick(4 * cfg.rt_timeout));

@@ -54,7 +54,7 @@ void TCPSender::fill_window() {
 
         maybe_sent += data_len;
         // cout << "win_size: " << win_size << " data_len: " << data_len << " maybe_sent: " << maybe_sent <<
-        //     " flight_bytes: " << _flight_bytes <<  endl;
+        //     " flight_bytes: " << _flight_bytes  << " buffer_size: " << _stream.buffer_size() <<  endl;
         // FIN 包只能发送一次
         if (data_len == _stream.buffer_size() && _stream.input_ended() && !_fin) {
             // cout << "win_size: " << win_size << " data_len: " << data_len << " maybe_sent: " << maybe_sent << endl;
@@ -66,6 +66,7 @@ void TCPSender::fill_window() {
         
         }
 
+        cout << "_fin: " << (_fin ? 1 : 0) << "\n";
         TCPSegment seg;
         seg.header() = header;
         seg.payload() = Buffer(move(_stream.read(data_len)));
@@ -78,8 +79,9 @@ void TCPSender::fill_window() {
         _segments_out.push(seg);
         _segments_in_flight.push(seg);
         if (!timer.running()) timer.start();
-        // cout << seg.header().summary();
-        // cout << " with " << seg.payload().size() << " bytes\n";
+        cout << "fill_window seg:" << endl;
+        cout << seg.header().summary();
+        cout << " with " << seg.payload().size() << " bytes\n";
     }
     
 }
@@ -88,18 +90,23 @@ void TCPSender::fill_window() {
 //! \param ackno The remote receiver's ackno (acknowledgment number)
 //! \param window_size The remote receiver's advertised window size
 void TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_size) {
+    cout << "ack raw: " << ackno.raw_value() << endl;
     uint64_t real_ackno = unwrap(ackno, _isn, _next_seqno);
     bool valid = false;
     // invalid ackno
     if (real_ackno > _next_seqno) {
         return;
     }
+    cout << "real_ackno: " << real_ackno << endl;
+    cout << "_next_seqno: " << _next_seqno << endl; 
     _window_size = window_size;
 
     // update segment in flights
     while (!_segments_in_flight.empty()) {
         auto seg = _segments_in_flight.front();
+
         uint64_t seg_end_sqno = unwrap(seg.header().seqno, _isn, _next_seqno) + seg.length_in_sequence_space();
+        cout << "seg_end_seqno: " << seg_end_sqno << endl;
         if (real_ackno >= seg_end_sqno) {
             // cout << "seqno: " << seg.header().seqno << endl;
             _segments_in_flight.pop();
@@ -114,7 +121,6 @@ void TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
         timer.reset(_initial_retransmission_timeout);
     }
 
-    
     // cout << "ack sqno:" << ackno.raw_value() << endl;
     fill_window();
     if (_segments_in_flight.empty()) {

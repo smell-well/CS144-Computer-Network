@@ -150,6 +150,9 @@ sender的条理上没有receiver清晰，我也是看了很多相关的解释。
 还有一个就是看到大家都会说这个实验要写状态图啥的，我是一点没明白要啥状态图啊，难道不是按教程里的写吗？
 
 直接写实在是太难了，我才用分步的方式，先写建立连接的部分，完成fsm_connect_relaxed再说。
+在写fsm_active_close的时候，需要额外注意当sender不会发送有内容的包时，手动判断了发送空的ack包的情况（还挺麻烦的）
 
 ### 实验过程
 - receiver 和 sender 主要维护报文中的 SYN、FIN、seqno、payload部分，而ack，ackno，win、rst等由 TCPConnection 来维护
+- 这个`linger_after_streams_finish`到底是什么意思，干什么用的？
+- 有些状态除了sender 和 receiver 状态外，还需要考虑`linger_after_streams_finish`

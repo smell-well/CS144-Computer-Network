@@ -310,7 +310,7 @@ TCPTestHarness TCPTestHarness::in_time_wait(const TCPConfig &cfg,
                                             const WrappingInt32 tx_isn,
                                             const WrappingInt32 rx_isn) {
     TCPTestHarness h = in_fin_wait_1(cfg, tx_isn, rx_isn);
-    h.send_fin(rx_isn + 1, tx_isn + 2);
+    h.send_fin(rx_isn + 1, tx_isn + 2); // 第三次挥手
     h.execute(ExpectOneSegment{}.with_no_flags().with_ack(true).with_ackno(rx_isn + 2));
     return h;
 }
