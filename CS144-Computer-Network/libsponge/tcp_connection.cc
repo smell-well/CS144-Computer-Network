@@ -167,9 +167,6 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         if (_sender.segments_out().empty()) {
             _sender.send_empty_segment();
         }
-
-        // 对于server
-
     }
 
 
